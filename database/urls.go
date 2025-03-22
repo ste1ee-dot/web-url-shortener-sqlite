@@ -25,6 +25,29 @@ func (r *UrlRepository) Insert(url Url) error {
 	return err
 }
 
+func (r *UrlRepository) GetAll() ([]Url, error) {
+	rows, err := r.Db.Query("SELECT originalUrl, shortUrl FROM urls")
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var urls []Url
+
+	for rows.Next() {
+		var url Url
+		err := rows.Scan(&url.OriginalUrl, &url.ShortUrl)
+		if err != nil {
+			return nil, err
+		}
+
+		urls = append(urls, url)
+	}
+
+	return urls, nil
+}
+
 func (r *UrlRepository) GetByOriginal(oUrl string) Url {
 	var url Url
 	err := r.Db.
