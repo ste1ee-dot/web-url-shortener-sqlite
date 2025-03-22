@@ -6,20 +6,22 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"time"
+
 	"web-url-shortener/database"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// Set your domain and DB path here:
-const domain = "localhost"
-const port = "8080"
+const (
+	// Set your domain and DB path here:
+	domain = "localhost"
+	port   = "8080"
 
-const dbPath = "./data.db"
-// Maximum lenght of shortened url path
-const keyLength = 6
+	dbPath = "./data.db"
 
+	// Maximum lenght of shortened url path
+	keyLength = 6
+)
 
 type Data struct {
 	Url string
@@ -28,7 +30,6 @@ type Data struct {
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 func generateShortKey() string {
-	rand.Seed(time.Now().UnixNano())
 	shortKey := make([]byte, keyLength)
 	for i := range shortKey {
 		shortKey[i] = charset[rand.Intn(len(charset))]
@@ -66,26 +67,22 @@ func main() {
 		tpl.ExecuteTemplate(w, "index.gohtml", nil)
 	})
 
-
 	router.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {
 		var shortUrl string
-		originalUrl	:= r.PostFormValue("url")
+		originalUrl := r.PostFormValue("url")
 		var emptyUrl database.Url
 		urltype := urlRepository.GetByOriginal(originalUrl)
 
 		if urltype == emptyUrl {
-			shortUrl = generateShortKey() 
+			shortUrl = generateShortKey()
 			addUrl(originalUrl, shortUrl, urlRepository)
 
 		} else {
 			shortUrl = urltype.ShortUrl
 		}
 
-
-
 		tpl.ExecuteTemplate(w, "shorten.gohtml", Data{
 			Url: domain + ":" + port + "/" + shortUrl,
-
 		})
 	})
 
@@ -101,7 +98,7 @@ func main() {
 	})
 
 	server := http.Server{
-		Addr: ":" + port,
+		Addr:    ":" + port,
 		Handler: router,
 	}
 	log.Println("Starting server on port :" + port)
