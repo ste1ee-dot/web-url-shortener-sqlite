@@ -21,5 +21,4 @@ go run .
  -	[log                - implements a simple logging package](https://pkg.go.dev/log)
  -	[math/rand         - implements pseudo-random number generators suitable for tasks such as simulation](https://pkg.go.dev/math/rand)
  -	[net/http - provides HTTP client and server implementations](https://pkg.go.dev/net/http)
- -	[time - provides functionality for measuring and displaying time](https://pkg.go.dev/time)
  -	[github.com/mattn/go-sqlite3 - sqlite3 driver that conforms to the built-in database/sql interface](https://github.com/mattn/go-sqlite3)
