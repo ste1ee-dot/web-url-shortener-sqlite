@@ -80,11 +80,10 @@ func main() {
 		tpl.ExecuteTemplate(w, "index.gohtml", nil)
 	})
 
-	var originalUrl string
-	var shortUrl string
 
 	router.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {
-		originalUrl	= r.PostFormValue("url")
+		var shortUrl string
+		originalUrl	:= r.PostFormValue("url")
 		var emptyUrl database.Url
 		urltype := urlRepository.GetByOriginal(originalUrl)
 
