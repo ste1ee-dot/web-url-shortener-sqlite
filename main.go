@@ -42,16 +42,6 @@ func init() {
 	tpl = template.Must(template.ParseGlob("templates/*.gohtml"))
 }
 
-func loadUrls(urls *[]database.Url, urlRepository *database.UrlRepository) {
-	var err error
-	*urls, err =  urlRepository.GetAll()
-	if err != nil {
-		panic(err)
-	}
-}
-
-
-
 func addUrl(url string, shortUrl string, urlRepository *database.UrlRepository) {
 
 	err := urlRepository.Insert(database.Url{OriginalUrl: url, ShortUrl: shortUrl})
@@ -70,10 +60,6 @@ func main() {
 	var urlRepository = &database.UrlRepository{Db: dbConnection}
 	urlRepository.CreateTable()
 
-
-	var urls []database.Url
-	loadUrls(&urls, urlRepository)
-
 	router := http.NewServeMux()
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -91,11 +77,6 @@ func main() {
 			shortUrl = generateShortKey() 
 			addUrl(originalUrl, shortUrl, urlRepository)
 
-			url := database.Url {
-				OriginalUrl: originalUrl,
-				ShortUrl: shortUrl,
-			}
-			urls = append(urls, url)
 		} else {
 			shortUrl = urltype.ShortUrl
 		}
