@@ -11,6 +11,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 )
+
 // Set your domain and DB path here:
 const domain = "localhost"
 const port = "8080"
@@ -27,12 +28,12 @@ type Data struct {
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 func generateShortKey() string {
-    rand.Seed(time.Now().UnixNano())
-    shortKey := make([]byte, keyLength)
-    for i := range shortKey {
-        shortKey[i] = charset[rand.Intn(len(charset))]
-    }
-    return string(shortKey)
+	rand.Seed(time.Now().UnixNano())
+	shortKey := make([]byte, keyLength)
+	for i := range shortKey {
+		shortKey[i] = charset[rand.Intn(len(charset))]
+	}
+	return string(shortKey)
 }
 
 var tpl *template.Template
@@ -52,12 +53,12 @@ func loadUrls(urls *[]database.Url, urlRepository *database.UrlRepository) {
 
 
 func addUrl(url string, shortUrl string, urlRepository *database.UrlRepository) {
-		
+
 	err := urlRepository.Insert(database.Url{OriginalUrl: url, ShortUrl: shortUrl})
 	if err != nil {
 		panic(err)
 	}
-	
+
 }
 
 func main() {
@@ -109,7 +110,14 @@ func main() {
 	})
 
 	router.HandleFunc("/{shortUrl}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, originalUrl, http.StatusMovedPermanently)
+		shortURL := r.PathValue("shortUrl")
+
+		oUrl, err := urlRepository.GetByShort(shortURL)
+		if err != nil {
+			panic(err)
+		}
+
+		http.Redirect(w, r, oUrl, http.StatusMovedPermanently)
 	})
 
 	server := http.Server{
